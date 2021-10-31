@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { renderWithTheme } from 'utils/tests/helper'
 
@@ -26,5 +27,41 @@ describe('<Checkbox />', () => {
     expect(screen.getByText(/checkbox label/i)).toHaveStyle({
       color: '#030517'
     })
+  })
+
+  it('Should dispatch onCheck when label status changes', () => {
+    const onCheck = jest.fn()
+    renderWithTheme(
+      <Checkbox label="checkbox label" onCheck={onCheck} isChecked={false} />
+    )
+
+    expect(onCheck).not.toHaveBeenCalled()
+
+    userEvent.click(screen.getByRole('checkbox'))
+    expect(onCheck).toHaveBeenCalledWith(true)
+
+    userEvent.click(screen.getByRole('checkbox'))
+    expect(onCheck).toHaveBeenCalledWith(false)
+  })
+
+  it('Should dispatch onCheck when label status changes', () => {
+    const onCheck = jest.fn()
+    renderWithTheme(
+      <Checkbox label="checkbox label" onCheck={onCheck} isChecked />
+    )
+
+    expect(onCheck).not.toHaveBeenCalled()
+
+    userEvent.click(screen.getByRole('checkbox'))
+    expect(onCheck).toHaveBeenCalledWith(false)
+  })
+
+  it('Should be accessible with tab', () => {
+    renderWithTheme(<Checkbox label="checkbox" labelFor="checkbox" />)
+
+    expect(document.body).toHaveFocus()
+    userEvent.tab()
+
+    expect(screen.getByLabelText(/checkbox/i)).toHaveFocus()
   })
 })
